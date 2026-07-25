@@ -17,7 +17,7 @@ func TestServer_Healthz(t *testing.T) {
 	if err != nil {
 		t.Fatalf("GET /healthz: %v", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode != http.StatusOK {
 		t.Fatalf("expected 200, got %d", resp.StatusCode)
@@ -41,7 +41,7 @@ func TestServer_InvokeThenStatusReflectsWarmingState(t *testing.T) {
 	if err != nil {
 		t.Fatalf("POST invoke: %v", err)
 	}
-	defer invokeResp.Body.Close()
+	defer func() { _ = invokeResp.Body.Close() }()
 
 	var invoked invokeResponse
 	if err := json.NewDecoder(invokeResp.Body).Decode(&invoked); err != nil {
@@ -55,7 +55,7 @@ func TestServer_InvokeThenStatusReflectsWarmingState(t *testing.T) {
 	if err != nil {
 		t.Fatalf("GET status: %v", err)
 	}
-	defer statusResp.Body.Close()
+	defer func() { _ = statusResp.Body.Close() }()
 
 	var status statusResponse
 	if err := json.NewDecoder(statusResp.Body).Decode(&status); err != nil {
@@ -71,7 +71,7 @@ func TestServer_InvokeThenStatusReflectsWarmingState(t *testing.T) {
 	if err != nil {
 		t.Fatalf("GET status (after warm-up): %v", err)
 	}
-	defer statusResp2.Body.Close()
+	defer func() { _ = statusResp2.Body.Close() }()
 
 	var status2 statusResponse
 	if err := json.NewDecoder(statusResp2.Body).Decode(&status2); err != nil {
@@ -107,7 +107,7 @@ func TestServer_ConcurrentInvokesDoNotRace(t *testing.T) {
 				t.Errorf("POST invoke: %v", err)
 				return
 			}
-			defer resp.Body.Close()
+			defer func() { _ = resp.Body.Close() }()
 
 			if resp.StatusCode != http.StatusOK {
 				t.Errorf("expected 200, got %d", resp.StatusCode)
@@ -121,7 +121,7 @@ func TestServer_ConcurrentInvokesDoNotRace(t *testing.T) {
 	if err != nil {
 		t.Fatalf("GET status: %v", err)
 	}
-	defer statusResp.Body.Close()
+	defer func() { _ = statusResp.Body.Close() }()
 
 	var status statusResponse
 	if err := json.NewDecoder(statusResp.Body).Decode(&status); err != nil {
